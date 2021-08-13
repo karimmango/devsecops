@@ -38,17 +38,21 @@ jobs:
             pip install -r requirements.txt      
             python manage.py test taskManager
             
-  oast:
+  oast-frontend:
     runs-on: ubuntu-latest
     needs: test
     steps:
       - uses: actions/checkout@v2
-      - run: docker run --rm -v $(pwd):/src hysnsec/safety check -r requirements.txt --json | tee oast-results.json
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '10.x'
+      - run: npm install
+      - run: docker run --rm -v $(pwd):/src hysnsec/retire --outputformat json --outputpath retirejs-report.json --severity high
         continue-on-error: true
       - uses: actions/upload-artifact@v2
         with:
-          name: Safety
-          path: oast-results.json
+          name: RetireJS
+          path: retireks-report.json
         if: always()
     
 
